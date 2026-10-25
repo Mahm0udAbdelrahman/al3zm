@@ -12,6 +12,7 @@ trait HttpResponse
         mixed $data = null,
         ?array $pagination = null,
         int|string|null $code = null,
+        ?array $meta = null,
     ): JsonResponse {
         $response = [
             'status' => $httpStatus >= 200 && $httpStatus < 300,
@@ -22,6 +23,10 @@ trait HttpResponse
 
         if ($pagination !== null) {
             $response['pagination'] = $pagination;
+        }
+
+        if ($meta !== null) {
+            $response['meta'] = $meta;
         }
 
         return response()->json($response, $httpStatus);
