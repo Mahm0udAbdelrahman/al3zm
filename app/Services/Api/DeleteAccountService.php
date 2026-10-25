@@ -9,12 +9,10 @@ class DeleteAccountService
         $user = auth()->user();
 
         if (! $user) {
-            return response()->json(['message' => 'User not authenticated', 'status' => false,], 401);
+            throw new NotFoundException(__('User not authenticated'),401);
         }
 
         $user->delete();
-
-        return response()->json(['message' => 'Account deleted successfully', 'status' => true], 200);
     }
 
 }

@@ -16,8 +16,8 @@ class LogoutController extends Controller
 
     public function logout()
     {
-        $user = $this->logoutService->logout();
-        return $this->okResponse(RegisterResource::make($user), __('logout', [], Request()->header('Accept-language')));
+        $this->logoutService->logout();
+        return $this->sendResponse(200, __('You logged out successfully'));
     }
 
 

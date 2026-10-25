@@ -18,16 +18,14 @@ class PasswordController extends Controller
 
     public function forgetPassword(SendCodeRequest $sendCodeRequest)
     {
-        $user     = $this->passwordService->forgetPassword($sendCodeRequest->validated());
-        $response = ['user' => RegisterResource::make($user), 'otp' => $user->code];
-        return $this->sendResponse(200, __('Code sent successfully'), $response);
+        $user = $this->passwordService->forgetPassword($sendCodeRequest->validated());
+        return $this->sendResponse(200, __('Code sent successfully'), RegisterResource::make($user));
     }
 
     public function confirmationOtp(ConfirmationOtpRequest $confirmationOtpRequest)
     {
-        $user     = $this->passwordService->confirmationOtp($confirmationOtpRequest->validated());
-        $response = ['otp' => $user->code];
-        return $this->sendResponse(200, __('Code verified successfully'), $response);
+        $user = $this->passwordService->confirmationOtp($confirmationOtpRequest->validated());
+        return $this->sendResponse(200, __('Code verified successfully'), RegisterResource::make($user));
     }
 
     public function resetPassword(ResetPasswordRequest $resetPasswordRequest)

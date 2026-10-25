@@ -17,7 +17,7 @@ class LogoutService
             $user->tokens()->delete();
             return $user;
         }
-        throw new NotFoundException(__('These credentials do not match our records.', [], Request()->header('Accept-language')));
+        throw new NotFoundException(__('These credentials do not match our records.'));
     }
 
 }

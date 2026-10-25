@@ -20,7 +20,6 @@ class PasswordService
         if ($user) {
             $otp = $this->otp->generate($data['phone'], 'numeric', 4, 10);
             OTPHelper::sendOtp($data['phone'], $otp->token);
-            // $user->code = $otp->token;
             return $user;
         }
         throw new NotFoundException(__('User not found'));
@@ -33,11 +32,10 @@ class PasswordService
             throw new NotFoundException(__('User not found'));
         }
 
-        if (! $this->otp->validate($data['phone'], $data['otp'])) {
+        if (! $this->otp->isValid($data['phone'], $data['otp'])) {
             throw new NotFoundException(__('Invalid or expired OTP'));
         }
 
-        // $user->code = $data['otp'];
         return $user;
     }
 

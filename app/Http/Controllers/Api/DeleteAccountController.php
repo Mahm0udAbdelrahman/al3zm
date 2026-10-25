@@ -13,6 +13,7 @@ class DeleteAccountController extends Controller
 
     public function deleteAccount()
     {
-        return $this->deleteAccountService->deleteAccount();
+        $this->deleteAccountService->deleteAccount();
+        return $this->sendResponse(200, __('Account deleted successfully'));
     }
 }
