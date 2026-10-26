@@ -27,7 +27,7 @@ class SendCodeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone'=>'required'
+            'phone'=>'required|exists:users,phone'
         ];
     }
 

@@ -27,8 +27,6 @@ class User extends Authenticatable
         'phone',
         'image',
         'is_active',
-        'code',
-        'expire_at',
         'fcm_token',
         'email_verified_at'
     ];

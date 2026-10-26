@@ -29,7 +29,7 @@ class ResetPasswordRequest extends FormRequest
         return [
             'phone'=>'required|exists:users,phone',
             'password' => 'required|string|min:8|confirmed',
-            'otp' => 'required|numeric'
+            // 'otp' => 'required|numeric'
         ];
     }
     protected function failedValidation(Validator $validator)

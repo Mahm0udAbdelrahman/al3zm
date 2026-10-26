@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services\Api;
 
 use Carbon\Carbon;
@@ -8,11 +9,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Exceptions\NotFoundException;
 use Fisal\Otp\Otp;
+use Illuminate\Support\Facades\Cache;
 
 class PasswordService
 {
-    public function __construct(public User $model, public Otp $otp)
-    {}
+    public function __construct(public User $model, public Otp $otp) {}
 
     public function forgetPassword($data)
     {
@@ -20,23 +21,29 @@ class PasswordService
         if ($user) {
             $otp = $this->otp->generate($data['phone'], 'numeric', 4, 10);
             OTPHelper::sendOtp($data['phone'], $otp->token);
-            return $user;
+            $data['phone'] = $user->phone;
+            if (app()->environment('local')) {
+                $data['code'] = $otp->token;
+            }
+            return $data;
         }
         throw new NotFoundException(__('User not found'));
     }
 
     public function confirmationOtp($data)
     {
+
         $user = $this->model->where('phone', $data['phone'])->first();
         if (! $user) {
             throw new NotFoundException(__('User not found'));
         }
-
-        if (! $this->otp->isValid($data['phone'], $data['otp'])) {
-            throw new NotFoundException(__('Invalid or expired OTP'));
+        $validate = $this->otp->validate($data['phone'], $data['otp']);
+        if (! $validate->status) {
+            throw new NotFoundException($validate->message);
         }
-
-        return $user;
+        Cache::put('reset_password_' . $user->id, $user->phone, 300);
+        $result['phone'] = $user->phone;
+        return $result;
     }
 
     public function resetPassword($data)
@@ -46,18 +53,17 @@ class PasswordService
             throw new NotFoundException(__('User not found'));
         }
 
-        $otpStatus = $this->otp->validate($data['phone'], $data['otp']);
-        if (! $otpStatus->status) {
-            throw new NotFoundException($otpStatus->message);
+        // $otpStatus = $this->otp->validate($data['phone'], $data['otp']);
+        $otpStatus = Cache::get('reset_password_' . $user->id);
+        if (! $otpStatus || $otpStatus !== $user->phone) {
+            throw new NotFoundException(__('Invalid or expired OTP'));
         }
 
         $user->update([
             'password' => Hash::make($data['password']),
-            'email_verified_at' => Carbon::now(),
         ]);
 
-        Auth::login($user);
-
+        Cache::forget('reset_password_' . $user->id);
         return $user;
     }
 

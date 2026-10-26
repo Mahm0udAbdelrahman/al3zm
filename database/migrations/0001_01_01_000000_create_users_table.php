@@ -20,8 +20,6 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('image')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->string('code')->nullable();
-            $table->timestamp('expire_at')->nullable();
             $table->text('fcm_token')->nullable();
             $table->rememberToken();
             $table->timestamps();
